@@ -12,13 +12,19 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /***
  *  Game manages all objects in the game and is responsible for updating all states and render all objects to the screen
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Player player;
     private final Joystick joystick;
+
     private GameLoop gameLoop;
+    private List<Enemy> enemies = new ArrayList<Enemy>();
 
     public Game(Context context) {
         super(context);
@@ -31,8 +37,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Initialize game objects
         joystick = new Joystick(265, 850, 120, 65);
-        player = new Player(getContext(), 500, 500, 40);
-
+        player = new Player(getContext(), joystick, 500, 500, 40);
         setFocusable(true);
     }
 
@@ -56,14 +61,32 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 joystick.resetActuatorPos();
                 return true;
         }
-
         return super.onTouchEvent(event);
     }
 
     public void update() {
         // Update game state
         joystick.update();
-        player.update(joystick);
+        player.update();
+
+        // Spawn enemies
+        if (Enemy.readyToSpawn()) {
+            enemies.add(new Enemy(getContext(), player, (double) 40));
+        }
+
+        // Update each enemy logic
+        for (Enemy enemy : enemies) {
+            enemy.update();
+        }
+
+        // Check collision with each enemy and the player
+        Iterator<Enemy> iteratorEnemy = enemies.iterator();
+        while(iteratorEnemy.hasNext()) {
+            if (Circle.isColliding(iteratorEnemy.next(), player)) {
+                // Remove enemy if it collides with the player
+                iteratorEnemy.remove();
+            }
+        }
     }
 
     @Override
@@ -71,9 +94,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
         drawUPS(canvas);
         drawFPS(canvas);
-        player.draw(canvas);
 
         joystick.draw(canvas);
+        player.draw(canvas);
+        for (Enemy enemy : enemies) {
+            enemy.draw(canvas);
+        }
     }
 
     @Override
