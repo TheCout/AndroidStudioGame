@@ -1,8 +1,11 @@
-package com.example.a2dgame;
+package com.example.a2dgame.object;
 
 import android.content.Context;
 
 import androidx.core.content.ContextCompat;
+
+import com.example.a2dgame.R;
+import com.example.a2dgame.Utils;
 
 public class Enemy extends Circle {
     private static final double SPEED_PIXELS_PER_SECOND = 300.0;
@@ -11,7 +14,7 @@ public class Enemy extends Circle {
     private static final double UPDATES_PER_SECOND = SPAWNS_PER_MINUTE / 60;
     private static final double UPDATES_PER_SPAWN = GameLoop.MAX_UPS / UPDATES_PER_SECOND;
     private static double updatesUntilNextSpawn = UPDATES_PER_SPAWN;
-    private Player player;
+    private final Player player;
 
     public Enemy(Context context, Player player, double size) {
         super(context, ContextCompat.getColor(context, R.color.enemy),
@@ -38,7 +41,7 @@ public class Enemy extends Circle {
         double distanceToPlayerY = player.getPositionY() - positionY;
 
         // Calculate (absolute) distance between enemy (this) and player
-        double distanceToPlayer = GameObject.getDistanceBetweenObjects(this, player);
+        double distanceToPlayer = Utils.getDistanceBetweenObjects(this, player);
 
         // Calculate direction from enemy to player
         double directionX = distanceToPlayerX/distanceToPlayer;

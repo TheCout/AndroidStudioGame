@@ -1,8 +1,10 @@
-package com.example.a2dgame;
+package com.example.a2dgame.object;
 
 import android.graphics.Canvas;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+
+import com.example.a2dgame.Game;
 
 public class GameLoop extends Thread {
     public static final double MAX_UPS = 60.0;
@@ -20,7 +22,6 @@ public class GameLoop extends Thread {
     public double getAvarageUPS() {
         return avarageUPS;
     }
-
     public double getAvarageFPS() {
         return avarageFPS;
     }
@@ -28,6 +29,11 @@ public class GameLoop extends Thread {
     public void startLoop() {
         isRunning = true;
         start();
+    }
+
+    public void stopLoop() {
+        isRunning = false;
+        interrupt();
     }
 
     @Override
@@ -44,7 +50,6 @@ public class GameLoop extends Thread {
         Canvas canvas = null;
         startTime = System.currentTimeMillis();
         while (isRunning) {
-
             // Try to update and render game
             try {
                 canvas = surfaceHolder.lockCanvas();

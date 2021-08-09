@@ -1,4 +1,4 @@
-package com.example.a2dgame;
+package com.example.a2dgame.object;
 
 import android.graphics.Canvas;
 
@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 public abstract class GameObject {
     protected double positionX, positionY;
     protected double velocityX, velocityY;
+    protected double directionX, directionY;
 
     public GameObject(double positionX, double positionY) {
         this.positionX = positionX;
@@ -18,11 +19,9 @@ public abstract class GameObject {
     public double getPositionY() {
         return positionY;
     }
+    public double getDirectionX() { return directionX; }
+    public double getDirectionY() { return directionY; }
 
     public abstract void draw(Canvas canvas);
     public abstract void update();
-
-    protected static double getDistanceBetweenObjects(GameObject obj1, GameObject obj2) {
-        return Math.sqrt(Math.pow(obj2.getPositionX() - obj1.getPositionX(), 2) + Math.pow(obj2.getPositionY() - obj1.getPositionY(), 2));
-    }
 }
