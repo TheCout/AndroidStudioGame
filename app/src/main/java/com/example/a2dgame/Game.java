@@ -1,7 +1,9 @@
 package com.example.a2dgame;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -38,6 +40,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private boolean playerIsAlive = true;
     private GameOver gameOver;
     private Performance performance;
+    private GameDisplay gameDisplay;
 
     public Game(Context context) {
         super(context);
@@ -56,6 +59,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Initialize game objects
         player = new Player(context, joystick, 500, 500, 40);
+
+        // Initialize game display and center it around the player
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
 
         // Play some doom music
         Audio.play(context, R.raw.doom);
@@ -100,8 +108,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Log.d("Game.java", "surfaceCreated()");
         if (gameLoop.getState().equals(Thread.State.TERMINATED))
         {
-            //SurfaceHolder surfaceHolder = getHolder();
-            //surfaceHolder.addCallback(this);
             gameLoop = new GameLoop(this, holder);
         }
         gameLoop.startLoop();
@@ -119,14 +125,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         performance.drawFPS(canvas);
 
         // Draw game objects
-        player.draw(canvas);
+        player.draw(canvas, gameDisplay);
 
         for (Enemy enemy : enemies) {
-            enemy.draw(canvas);
+            enemy.draw(canvas, gameDisplay);
         }
 
         for (Bullet bullet : bullets) {
-            bullet.draw(canvas);
+            bullet.draw(canvas, gameDisplay);
         }
 
         // Draw game panels
@@ -190,11 +196,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             Iterator<Bullet> iteratorBullet = bullets.iterator();
             while (iteratorBullet.hasNext()) {
                 Circle bullet = iteratorBullet.next();
-
-                // Removes bullet if it is outside the screen
-                if (bullet.getPositionX() < 0 || bullet.getDirectionY() < 0) {
-                    iteratorBullet.remove();
-                }
+                
                 if (Circle.isColliding(bullet, enemy)) {
                     // Remove enemy and bullet if both collides with each other
                     iteratorEnemy.remove();
@@ -203,6 +205,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+        gameDisplay.update();
     }
 
     public void pause() {

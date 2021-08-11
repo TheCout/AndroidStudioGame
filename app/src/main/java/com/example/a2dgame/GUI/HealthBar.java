@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.a2dgame.GameDisplay;
 import com.example.a2dgame.R;
 import com.example.a2dgame.object.Player;
 
@@ -29,7 +30,7 @@ public class HealthBar {
         this.healthBarPaint.setColor(healthBarColor);
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, GameDisplay gameDisplay) {
         float x = (float) player.getPositionX();
         float y = (float) player.getPositionY();
         float distanceToPlayer = 85;
@@ -43,7 +44,11 @@ public class HealthBar {
         borderBottom = borderTop + height;
 
         // Draw border
-        canvas.drawRect(borderLeft, borderTop, borderRight, borderBottom, borderPaint);
+        canvas.drawRect(
+                (float) gameDisplay.gameToDisplayCoordinatesX(borderLeft),
+                (float) gameDisplay.gameToDisplayCoordinatesY(borderTop),
+                (float) gameDisplay.gameToDisplayCoordinatesX(borderRight),
+                (float) gameDisplay.gameToDisplayCoordinatesY(borderBottom), borderPaint);
 
         // Health bar positions
         float healthBarLeft, healthBarTop, healthBarRight, healthBarBottom;
@@ -53,6 +58,10 @@ public class HealthBar {
         healthBarBottom = borderTop + height - margin;
 
         // Draw health
-        canvas.drawRect(healthBarLeft, healthBarTop, healthBarRight, healthBarBottom, healthBarPaint);
+        canvas.drawRect(
+                (float) gameDisplay.gameToDisplayCoordinatesX(healthBarLeft),
+                (float) gameDisplay.gameToDisplayCoordinatesY(healthBarTop),
+                (float) gameDisplay.gameToDisplayCoordinatesX(healthBarRight),
+                (float) gameDisplay.gameToDisplayCoordinatesY(healthBarBottom), healthBarPaint);
     }
 }

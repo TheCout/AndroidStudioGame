@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.a2dgame.GUI.HealthBar;
 import com.example.a2dgame.GUI.Joystick;
+import com.example.a2dgame.GameDisplay;
 import com.example.a2dgame.R;
 import com.example.a2dgame.Utils;
 
@@ -53,9 +54,9 @@ public class Player extends Circle {
         }
     }
 
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-        healthBar.draw(canvas);
+    public void draw(Canvas canvas, GameDisplay gameDisplay) {
+        super.draw(canvas, gameDisplay);
+        healthBar.draw(canvas, gameDisplay);
     }
 }
 
