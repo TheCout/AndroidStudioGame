@@ -1,4 +1,4 @@
-package com.example.a2dgame.object;
+package com.example.a2dgame.GUI;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import androidx.core.content.ContextCompat;
 
 import com.example.a2dgame.R;
+import com.example.a2dgame.object.Player;
 
 public class HealthBar {
     private final Player player;
@@ -32,7 +33,7 @@ public class HealthBar {
         float x = (float) player.getPositionX();
         float y = (float) player.getPositionY();
         float distanceToPlayer = 85;
-        float healthPointPorcentage = player.getHealthPoints() / player.MAX_HEALTH_POINTS;
+        float healthPointPorcentage = (float) player.getHealthPoints() / (float) player.MAX_HEALTH_POINTS;
 
         // Border positions
         float borderLeft, borderTop, borderRight, borderBottom;
@@ -47,7 +48,7 @@ public class HealthBar {
         // Health bar positions
         float healthBarLeft, healthBarTop, healthBarRight, healthBarBottom;
         healthBarLeft = borderLeft + margin;
-        healthBarRight = healthBarLeft + (width - margin * 2) * healthPointPorcentage;
+        healthBarRight = healthBarLeft + (width - margin * 2) * (float) healthPointPorcentage;
         healthBarTop = borderTop + margin;
         healthBarBottom = borderTop + height - margin;
 

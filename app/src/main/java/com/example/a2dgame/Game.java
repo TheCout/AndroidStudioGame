@@ -2,14 +2,17 @@ package com.example.a2dgame;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
+import com.example.a2dgame.GUI.GameOver;
+import com.example.a2dgame.GUI.Joystick;
+import com.example.a2dgame.GUI.Performance;
+import com.example.a2dgame.object.Bullet;
 import com.example.a2dgame.object.Circle;
 import com.example.a2dgame.object.Enemy;
 import com.example.a2dgame.object.GameLoop;
@@ -33,6 +36,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int numberOfBulletsToCast = 0;
 
     private boolean playerIsAlive = true;
+    private GameOver gameOver;
+    private Performance performance;
 
     public Game(Context context) {
         super(context);
@@ -44,9 +49,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Initialize game loop
         gameLoop = new GameLoop(this, surfaceHolder);
 
-        // Initialize game objects
+        // Initialize game panels
+        performance = new Performance(context, gameLoop);
+        gameOver = new GameOver(context);
         joystick = new Joystick(265, 850, 120, 65);
-        player = new Player(getContext(), joystick, 500, 500, 40);
+
+        // Initialize game objects
+        player = new Player(context, joystick, 500, 500, 40);
 
         // Play some doom music
         Audio.play(context, R.raw.doom);
@@ -54,7 +63,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
     }
 
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         // Handle touch event actions
@@ -88,7 +96,54 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         return super.onTouchEvent(event);
     }
 
+    public void surfaceCreated(@NonNull SurfaceHolder holder) {
+        Log.d("Game.java", "surfaceCreated()");
+        if (gameLoop.getState().equals(Thread.State.TERMINATED))
+        {
+            //SurfaceHolder surfaceHolder = getHolder();
+            //surfaceHolder.addCallback(this);
+            gameLoop = new GameLoop(this, holder);
+        }
+        gameLoop.startLoop();
+    }
+    public void surfaceChanged(@NonNull SurfaceHolder holder, int i, int i1, int i2) {
+        Log.d("Game.java", "surfaceChanged()");
+    }
+    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+        Log.d("Game.java", "surfaceDestroyed()");
+    }
+
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        performance.drawUPS(canvas);
+        performance.drawFPS(canvas);
+
+        // Draw game objects
+        player.draw(canvas);
+
+        for (Enemy enemy : enemies) {
+            enemy.draw(canvas);
+        }
+
+        for (Bullet bullet : bullets) {
+            bullet.draw(canvas);
+        }
+
+        // Draw game panels
+        joystick.draw(canvas);
+        performance.draw(canvas);
+
+        // Draw game over if player health is less than 0
+        if (!playerIsAlive) {
+            gameOver.draw(canvas);
+        }
+    }
+
     public void update() {
+
+        // If the game is over, stop updating the game
+        if (!playerIsAlive) { return; }
+
         // Update game state
         joystick.update();
         player.update();
@@ -122,9 +177,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 // Remove enemy if it collides with the player
                 iteratorEnemy.remove();
 
-                float playerHealth = player.getHealthPoints();
-                if (playerHealth > 0) {
-                    player.setHealthPoints(playerHealth - 10);
+                int playerHealth = player.getHealthPoints();
+                if (playerHealth - 20 > 0) {
+                    player.setHealthPoints(playerHealth - 20);
                 } else {
                     // --- Game over ---
                     playerIsAlive = false;
@@ -150,58 +205,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-        for (Enemy enemy : enemies) {
-            enemy.draw(canvas);
-        }
-
-        for (Bullet bullet : bullets) {
-            bullet.draw(canvas);
-        }
-
-        joystick.draw(canvas);
-        player.draw(canvas);
-
-        drawUPS(canvas);
-        drawFPS(canvas);
-        
-        // Draw game over if player health is less than 0
-        if (!playerIsAlive) {
-            
-        }
-    }
-
-    @Override
-    public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        gameLoop.startLoop();
-    }
-
-    @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int i, int i1, int i2) {
-    }
-
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        //gameLoop.stopLoop();
-    }
-
-    public void drawUPS(Canvas canvas) {
-        String avarageUPS = Double.toString(gameLoop.getAvarageUPS());
-        Paint paint = new Paint();
-        int color = ContextCompat.getColor(getContext(), R.color.magenta);
-        paint.setColor(color);
-        paint.setTextSize(50);
-        canvas.drawText("UPS: " + avarageUPS, 100, 100, paint);
-    }
-
-    public void drawFPS(Canvas canvas) {
-        String avarageFPS = Double.toString(gameLoop.getAvarageFPS());
-        Paint paint = new Paint();
-        int color = ContextCompat.getColor(getContext(), R.color.magenta);
-        paint.setColor(color);
-        paint.setTextSize(50);
-        canvas.drawText("FPS: " + avarageFPS, 100, 180, paint);
+    public void pause() {
+        gameLoop.stopLoop();
     }
 }

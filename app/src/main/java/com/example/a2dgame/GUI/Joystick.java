@@ -1,4 +1,4 @@
-package com.example.a2dgame;
+package com.example.a2dgame.GUI;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

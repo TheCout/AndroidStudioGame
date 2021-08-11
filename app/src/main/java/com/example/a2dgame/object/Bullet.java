@@ -1,9 +1,10 @@
-package com.example.a2dgame;
+package com.example.a2dgame.object;
 
 import android.content.Context;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.a2dgame.R;
 import com.example.a2dgame.object.Circle;
 import com.example.a2dgame.object.GameLoop;
 import com.example.a2dgame.object.Player;

@@ -1,6 +1,7 @@
 package com.example.a2dgame.object;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -30,14 +31,19 @@ public class GameLoop extends Thread {
         isRunning = true;
         start();
     }
-
     public void stopLoop() {
+        Log.d("GameLoop.java", "stopLoop()");
         isRunning = false;
-        interrupt();
+        // Wait for thread to join
+        try {
+            join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
     public void run() {
+        Log.d("GameLoop.java", "run()");
         super.run();
 
         // Declare time and cycle count variables

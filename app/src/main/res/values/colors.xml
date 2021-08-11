@@ -13,4 +13,5 @@
     <color name="bullet">#FF9400</color>
     <color name="healthBarBorder">#5A5A5A</color>
     <color name="healthBar">#49D531</color>
+    <color name="gameOver">#FF3628</color>
 </resources>

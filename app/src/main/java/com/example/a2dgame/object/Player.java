@@ -4,15 +4,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 
 import androidx.core.content.ContextCompat;
-import com.example.a2dgame.Joystick;
+
+import com.example.a2dgame.GUI.HealthBar;
+import com.example.a2dgame.GUI.Joystick;
 import com.example.a2dgame.R;
 import com.example.a2dgame.Utils;
 
 public class Player extends Circle {
     private static final double SPEED_PIXELS_PER_SECOND = 400.0;
     private static final double SPEED = SPEED_PIXELS_PER_SECOND / GameLoop.MAX_UPS;
-    protected static final float MAX_HEALTH_POINTS = 100;
-    private float healthPoints;
+    public static final int MAX_HEALTH_POINTS = 100;
+    private int healthPoints;
 
     private Joystick joystick;
     private HealthBar healthBar;
@@ -24,12 +26,13 @@ public class Player extends Circle {
         this.healthBar = new HealthBar(context,this);
     }
 
-    public float getHealthPoints() {
+    public int getHealthPoints() {
         return healthPoints;
     }
 
-    public void setHealthPoints(float healthPoints) {
-        if (healthPoints >= 0) this.healthPoints = healthPoints;
+    public void setHealthPoints(int healthPoints) {
+        if (healthPoints < 0) this.healthPoints = 0;
+        this.healthPoints = healthPoints;
     }
 
     public void update() {
