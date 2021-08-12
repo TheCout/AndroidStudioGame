@@ -14,11 +14,13 @@ import androidx.annotation.NonNull;
 import com.example.a2dgame.GUI.GameOver;
 import com.example.a2dgame.GUI.Joystick;
 import com.example.a2dgame.GUI.Performance;
+import com.example.a2dgame.graphics.SpriteSheet;
 import com.example.a2dgame.object.Bullet;
 import com.example.a2dgame.object.Circle;
 import com.example.a2dgame.object.Enemy;
 import com.example.a2dgame.object.GameLoop;
 import com.example.a2dgame.object.Player;
+import com.example.a2dgame.world.World;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,19 +30,24 @@ import java.util.List;
  *  Game manages all objects in the game and is responsible for updating all states and render all objects to the screen
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
-    private final Player player;
-    private final Joystick joystick;
-
     private GameLoop gameLoop;
+    private GameDisplay gameDisplay;
+
+    private final World world;
+
+    // Game objects
+    private final Player player;
     private List<Enemy> enemies = new ArrayList<Enemy>();
     private List<Bullet> bullets = new ArrayList<Bullet>();
+
     private int joystickPointerId = 0;
     private int numberOfBulletsToCast = 0;
-
     private boolean playerIsAlive = true;
+
+    // GUI classes
+    private final Joystick joystick;
     private GameOver gameOver;
     private Performance performance;
-    private GameDisplay gameDisplay;
 
     public Game(Context context) {
         super(context);
@@ -57,8 +64,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameOver = new GameOver(context);
         joystick = new Joystick(265, 850, 120, 65);
 
+        // Initialize world
+        SpriteSheet spriteSheet = new SpriteSheet(context);
+        world = new World(spriteSheet);
+
         // Initialize game objects
-        player = new Player(context, joystick, 500, 500, 40);
+        player = new Player(context, spriteSheet, joystick, 500, 500, 64);
 
         // Initialize game display and center it around the player
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -66,8 +77,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
 
         // Play some doom music
-        Audio.play(context, R.raw.doom);
-        // To stop audio: Audio.stop();
+        Audio.play(context, R.raw.doom); // To stop audio: Audio.stop();
         setFocusable(true);
     }
 
@@ -123,6 +133,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
         performance.drawUPS(canvas);
         performance.drawFPS(canvas);
+
+        // Draw the world
+        world.draw(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
@@ -196,7 +209,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             Iterator<Bullet> iteratorBullet = bullets.iterator();
             while (iteratorBullet.hasNext()) {
                 Circle bullet = iteratorBullet.next();
-                
+
                 if (Circle.isColliding(bullet, enemy)) {
                     // Remove enemy and bullet if both collides with each other
                     iteratorEnemy.remove();

@@ -33,7 +33,7 @@ public class HealthBar {
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
         float x = (float) player.getPositionX();
         float y = (float) player.getPositionY();
-        float distanceToPlayer = 85;
+        float distanceToPlayer = 95;
         float healthPointPorcentage = (float) player.getHealthPoints() / (float) player.MAX_HEALTH_POINTS;
 
         // Border positions
